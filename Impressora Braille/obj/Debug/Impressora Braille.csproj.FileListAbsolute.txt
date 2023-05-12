@@ -1,0 +1,10 @@
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\bin\Debug\Impressora Braille.exe.config
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\bin\Debug\Impressora Braille.exe
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\bin\Debug\Impressora Braille.pdb
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora Braille.csprojAssemblyReference.cache
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora_Braille.Form1.resources
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora_Braille.Properties.Resources.resources
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora Braille.csproj.GenerateResource.cache
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora Braille.csproj.CoreCompileInputs.cache
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora Braille.exe
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora Braille.pdb
