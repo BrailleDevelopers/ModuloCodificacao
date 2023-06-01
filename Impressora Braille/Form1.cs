@@ -7,24 +7,68 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO.Ports;
 
 namespace Impressora_Braille
 {
     public partial class Form1 : Form
     {
+        string RxString;
         public Form1()
         {
             InitializeComponent();
+            timerCOM.Enabled = true;
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        private void atualizaListaCOMs()
         {
+            int i;
+            bool quantDiferente;
 
+            i = 0;
+            quantDiferente = false;
+
+            if (comboBox1.Items.Count == SerialPort.GetPortNames().Length)
+            {
+                foreach (string s in SerialPort.GetPortNames())
+                {
+                    if (comboBox1.Items[i++].Equals(s) == false)
+                    {
+                        quantDiferente = true;
+                    }
+                }
+            }
+            else
+            {
+                quantDiferente = true;
+            }
+
+            if (quantDiferente == false)
+            {
+                return;
+            }
+
+            //limpa comboBox
+            comboBox1.Items.Clear();
+
+            //adiciona todas as COM diponíveis na lista
+            foreach (string s in SerialPort.GetPortNames())
+            {
+                comboBox1.Items.Add(s);
+            }
+            //seleciona a primeira posição da lista
+            comboBox1.SelectedIndex = 0;
+        }
+
+        private void timerCOM_Tick(object sender, EventArgs e)
+        {
+            atualizaListaCOMs();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             textBox1.Text = string.Empty;
+            textBoxReceber.Text = string.Empty;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -54,6 +98,10 @@ namespace Impressora_Braille
                         fraseFinal = gerarFraseCompleta(frase, true);
                     }
 
+                    if (serialPort1.IsOpen == true) 
+                    {
+                        serialPort1.Write(fraseFinal);  //envia o texto
+                    }
                     Console.WriteLine(fraseFinal);
 
                 }
@@ -133,12 +181,78 @@ namespace Impressora_Braille
             return linhaFinal;
         }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (serialPort1.IsOpen == false)
+            {
+                try
+                {
+                    serialPort1.PortName = comboBox1.Items[comboBox1.SelectedIndex].ToString();
+                    serialPort1.Open();
+
+                }
+                catch
+                {
+                    return;
+
+                }
+                if (serialPort1.IsOpen)
+                {
+                    comboBox1.Enabled = false;
+                    button3.Text = "Desconectar";
+                    button3.BackColor = Color.FromArgb(190, 87, 87);
+
+                }
+            }
+            else
+            {
+
+                try
+                {
+                    serialPort1.Close();
+                    comboBox1.Enabled = true;
+                    button3.Text = "Conectar";
+                    button3.BackColor = Color.FromArgb(99, 165, 115);
+                }
+                catch
+                {
+                    return;
+                }
+
+            }
+        }
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (serialPort1.IsOpen == true)  // se porta aberta
+                serialPort1.Close();            //fecha a porta
+        }
+
+        private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            RxString = Convert.ToString(serialPort1.ReadExisting());              //le o dado disponível na serial
+            this.Invoke(new EventHandler(trataDadoRecebido));   //chama outra thread para escrever o dado no text box
+        }
+        private void trataDadoRecebido(object sender, EventArgs e)
+        {
+            textBoxReceber.AppendText(RxString);
+        }
+
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
         {
 
         }
