@@ -103,6 +103,7 @@ namespace Impressora_Braille
                         serialPort1.Write(fraseFinal);  //envia o texto
                     }
                     Console.WriteLine(fraseFinal);
+                    textBoxReceber.Text = fraseFinal;
 
                 }
                 else
