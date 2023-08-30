@@ -77,18 +77,54 @@ namespace Impressora_Braille
             {
                 String frase = textBox1.Text;
                 String fraseFinal = "";
+                int tamanhoFrase = 0;
 
                 if (!string.IsNullOrEmpty(frase))
                 {
-                    if (frase.Length > 20)
+                    //Verificação, pra cada caractere maiusculo ou numérico aumenta 1 caracter ou conta menos 1 nos ifs
+                    foreach (char character in frase)
                     {
-                        while (frase.Length > 20)
+                        if ((char.IsLetter(character) && character == char.ToUpper(character)) || char.IsDigit(character))
                         {
-                            String primeiraParteFrase = frase.Substring(0, 20);
-                            frase = frase.Substring(20);
-                            fraseFinal += gerarFraseCompleta(primeiraParteFrase, false);
+                            tamanhoFrase += 2;
                         }
-                        if (frase.Length <= 20)
+                        else // The character is not a letter, it's not in uppercase, or it's not a number.
+                        {
+                            tamanhoFrase += 1;
+                        }
+
+                        if (tamanhoFrase >= 20)
+                        {
+                            break; // Exit the loop if tamanhoFrase reaches 20 or more.
+                        }
+                    }
+
+
+                    if (frase.Length > tamanhoFrase)
+                    {
+                        while (frase.Length > tamanhoFrase)
+                        {
+                            String primeiraParteFrase = frase.Substring(0, tamanhoFrase);
+                            frase = frase.Substring(tamanhoFrase);
+                            fraseFinal += gerarFraseCompleta(primeiraParteFrase, false);
+                            foreach (char character in frase)
+                            {
+                                if ((char.IsLetter(character) && character == char.ToUpper(character)) || char.IsDigit(character))
+                                {
+                                    tamanhoFrase += 2;
+                                }
+                                else 
+                                {
+                                    tamanhoFrase += 1;
+                                }
+
+                                if (tamanhoFrase >= 20)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                        if (frase.Length <= tamanhoFrase)
                         {
                             fraseFinal += gerarFraseCompleta(frase, true);
                         }
@@ -140,6 +176,7 @@ namespace Impressora_Braille
 
             Dictionary<char, string[]> caracteres = new Dictionary<char, string[]>
             {
+                {' ', new string[] {"0", "0", "0"}},
                 {'a', new string[] {"2", "0", "0"}},
                 {'b', new string[] {"2", "2", "0"}},
                 {'c', new string[] {"3", "0", "0"}},
@@ -166,16 +203,96 @@ namespace Impressora_Braille
                 {'x', new string[] {"3", "0", "3" }},
                 {'y', new string[] {"3", "1", "3" }},
                 {'z', new string[] {"2", "1", "3" }},
-                {' ', new string[] {"0", "0", "0"}}
+                {'á', new string[] {"2", "3", "3" }},
+                {'é', new string[] {"3", "3", "3" }},
+                {'í', new string[] {"1", "0", "2" }},
+                {'ó', new string[] {"1", "0", "3" }},
+                {'ú', new string[] {"1", "3", "3" }},
+                {'à', new string[] {"3", "2", "1" }},
+                {'â', new string[] {"2", "0", "1" }},
+                {'ê', new string[] {"2", "2", "1" }},
+                {'ô', new string[] {"3", "1", "1" }},
+                {'ã', new string[] {"1", "1", "2" }},
+                {'õ', new string[] {"1", "2", "1" }},
+                {'ç', new string[] {"3", "2", "3" }},
+                {',', new string[] {"0", "2", "0" }},
+                {';', new string[] {"0", "2", "2" }},
+                {':', new string[] {"0", "3", "0" }},
+                //{':', new string[] {"0", "3", "0" }},
+                {'.', new string[] {"0", "0", "2" }},
+                {'’', new string[] {"0", "0", "2" }},
+                {'?', new string[] {"0", "2", "1" }},
+                {'!', new string[] {"0", "3", "2" }},
+                {'-', new string[] {"0", "0", "3" }},
+                {'∗', new string[] {"0", "1", "2" }},
+                {'“', new string[] {"0", "2", "3" }},
+                {'”', new string[] {"0", "2", "3" }},
+                {'"', new string[] {"0", "2", "3" }},
+                //{'"', new string[] {"0", "2", "3" }},
+                {'&', new string[] {"3", "2", "3" }},
+                {'|', new string[] {"1", "1", "1" }},
+                {'$', new string[] {"0", "1", "1" }},
+                {'+', new string[] {"0", "3", "2" }},
+                //{'x', new string[] {"0", "2", "3" }}, //vezes 
+                {'÷', new string[] {"0", "3", "1" }},
+                //{':', new string[] {"0", "3", "1" }}, //dividido
+                //{'/', new string[] {"0", "3", "1" }}, //dividido
+                {'=', new string[] {"0", "3", "3" }},
+                {'>', new string[] {"2", "1", "2" }},
+                {'<', new string[] {"1", "2", "1" }},
+                {'°', new string[] {"0", "1", "3" }},
+                {'′', new string[] {"2", "3", "1" }},
+
+
+                //Faltando -> reticencias, parênteses, colchetes, aspas simples ', aspas agulares ou outras variantes,
+                //circulo, quadrado, barra, versus ×, setas, hashtag, estrela, cruz, simbolos de genero, copyright, marca registrada,
+                //euro, libra, Iene, por cento, por mil, paragrafo, traço de fração, polegada, segundos
+                // Sinais - maiuscula, caixa alta, numero, etc
+                //http://portal.mec.gov.br/docman/dezembro-2018-pdf/104041-anexo-grafia-braille-para-lingua-portguesa/file
             };
 
             string linhaFinal = "";
 
-            foreach (char character in frase.ToLower())
+            foreach (char character in frase)
             {
-                if (caracteres.ContainsKey(character))
+                if (char.IsLetter(character) && character == char.ToUpper(character))
                 {
+                    if(linha == 1)
+                    {
+                        linhaFinal += "1";
+                    }
+                    else if(linha == 2)
+                    {
+                        linhaFinal += "0";
+                    }
+                    else if(linha == 3)
+                    {
+                        linhaFinal += "1";
+                    }
+                    linhaFinal += caracteres[char.ToLower(character)][linha - 1];
+                }
+                else if (char.IsDigit(character))
+                {
+                    if (linha == 1)
+                    {
+                        linhaFinal += "1";
+                    }
+                    else if (linha == 2)
+                    {
+                        linhaFinal += "1";
+                    }
+                    else if (linha == 3)
+                    {
+                        linhaFinal += "3";
+                    }
                     linhaFinal += caracteres[character][linha - 1];
+                }
+                else
+                {
+                    if (caracteres.ContainsKey(character))
+                    {
+                        linhaFinal += caracteres[character][linha - 1];
+                    }
                 }
             }
 
