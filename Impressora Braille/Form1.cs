@@ -78,19 +78,45 @@ namespace Impressora_Braille
                 String frase = textBox1.Text;
                 String fraseFinal = "";
                 int tamanhoFrase = 0;
+                bool lastWasNumber = false;
+                bool lastWasUpperCase = false;
 
                 if (!string.IsNullOrEmpty(frase))
                 {
                     //Verificação, pra cada caractere maiusculo ou numérico aumenta 1 caracter ou conta menos 1 nos ifs
                     foreach (char character in frase)
                     {
-                        if ((char.IsLetter(character) && character == char.ToUpper(character)) || char.IsDigit(character))
+                        if ((char.IsLetter(character) && character == char.ToUpper(character)))
                         {
-                            tamanhoFrase += 2;
+                            if (lastWasUpperCase)
+                            {
+                                tamanhoFrase += 1;
+                            }
+                            else
+                            {
+                                tamanhoFrase += 2;
+                            }
+                            lastWasUpperCase = true;
+                            lastWasNumber = false;
+                        }
+                        else if(char.IsDigit(character))
+                        {
+                            if (lastWasNumber)
+                            {
+                                tamanhoFrase += 1;
+                            }
+                            else
+                            {
+                                tamanhoFrase += 2;
+                            }
+                            lastWasNumber = true;
+                            lastWasUpperCase = false;
                         }
                         else // The character is not a letter, it's not in uppercase, or it's not a number.
                         {
                             tamanhoFrase += 1;
+                            lastWasNumber = false;
+                            lastWasUpperCase = false;
                         }
 
                         if (tamanhoFrase >= 20)
@@ -107,15 +133,42 @@ namespace Impressora_Braille
                             String primeiraParteFrase = frase.Substring(0, tamanhoFrase);
                             frase = frase.Substring(tamanhoFrase);
                             fraseFinal += gerarFraseCompleta(primeiraParteFrase, false);
+                            lastWasNumber = false;
+                            lastWasUpperCase = false;
+
                             foreach (char character in frase)
                             {
-                                if ((char.IsLetter(character) && character == char.ToUpper(character)) || char.IsDigit(character))
+                                if ((char.IsLetter(character) && character == char.ToUpper(character)))
                                 {
-                                    tamanhoFrase += 2;
+                                    if (lastWasUpperCase)
+                                    {
+                                        tamanhoFrase += 1;
+                                    }
+                                    else
+                                    {
+                                        tamanhoFrase += 2;
+                                    }
+                                    lastWasUpperCase = true;
+                                    lastWasNumber = false;
+                                }
+                                else if (char.IsDigit(character))
+                                {
+                                    if (lastWasNumber)
+                                    {
+                                        tamanhoFrase += 1;
+                                    }
+                                    else
+                                    {
+                                        tamanhoFrase += 2;
+                                    }
+                                    lastWasNumber = true;
+                                    lastWasUpperCase = false;
                                 }
                                 else 
                                 {
                                     tamanhoFrase += 1;
+                                    lastWasNumber = false;
+                                    lastWasUpperCase = false;
                                 }
 
                                 if (tamanhoFrase >= 20)
@@ -242,6 +295,16 @@ namespace Impressora_Braille
                 {'<', new string[] {"1", "2", "1" }},
                 {'°', new string[] {"0", "1", "3" }},
                 {'′', new string[] {"2", "3", "1" }},
+                {'0', new string[] {"1", "3", "0" }},
+                {'1', new string[] {"2", "0", "0" }},
+                {'2', new string[] {"2", "2", "0" }},
+                {'3', new string[] {"3", "0", "0" }},
+                {'4', new string[] {"3", "1", "0" }},
+                {'5', new string[] {"2", "1", "0" }},
+                {'6', new string[] {"3", "2", "0" }},
+                {'7', new string[] {"3", "3", "0" }},
+                {'8', new string[] {"2", "3", "0" }},
+                {'9', new string[] {"1", "2", "0" }},
 
 
                 //Faltando -> reticencias, parênteses, colchetes, aspas simples ', aspas agulares ou outras variantes,
@@ -252,46 +315,59 @@ namespace Impressora_Braille
             };
 
             string linhaFinal = "";
+            bool lastWasNumber = false;
 
             foreach (char character in frase)
             {
                 if (char.IsLetter(character) && character == char.ToUpper(character))
                 {
-                    if(linha == 1)
+                    if (caracteres.ContainsKey(char.ToLower(character)))
                     {
-                        linhaFinal += "1";
+                        if (linha == 1)
+                        {
+                            linhaFinal += "1";
+                        }
+                        else if (linha == 2)
+                        {
+                            linhaFinal += "0";
+                        }
+                        else if (linha == 3)
+                        {
+                            linhaFinal += "1";
+                        }
+                        linhaFinal += caracteres[char.ToLower(character)][linha - 1];
+                        lastWasNumber = false;
                     }
-                    else if(linha == 2)
-                    {
-                        linhaFinal += "0";
-                    }
-                    else if(linha == 3)
-                    {
-                        linhaFinal += "1";
-                    }
-                    linhaFinal += caracteres[char.ToLower(character)][linha - 1];
                 }
                 else if (char.IsDigit(character))
                 {
-                    if (linha == 1)
+                    if (caracteres.ContainsKey(character))
                     {
-                        linhaFinal += "1";
+                        if (!lastWasNumber)
+                        {
+                            if (linha == 1)
+                            {
+                                linhaFinal += "1";
+                            }
+                            else if (linha == 2)
+                            {
+                                linhaFinal += "1";
+                            }
+                            else if (linha == 3)
+                            {
+                                linhaFinal += "3";
+                            }
+                        }
+                        linhaFinal += caracteres[character][linha - 1];
+                        lastWasNumber = true;
                     }
-                    else if (linha == 2)
-                    {
-                        linhaFinal += "1";
-                    }
-                    else if (linha == 3)
-                    {
-                        linhaFinal += "3";
-                    }
-                    linhaFinal += caracteres[character][linha - 1];
                 }
                 else
                 {
                     if (caracteres.ContainsKey(character))
                     {
                         linhaFinal += caracteres[character][linha - 1];
+                        lastWasNumber = false;
                     }
                 }
             }
