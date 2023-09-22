@@ -8,3 +8,8 @@ C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impr
 C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora Braille.csproj.CoreCompileInputs.cache
 C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora Braille.exe
 C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora Braille.pdb
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\bin\Debug\DocumentFormat.OpenXml.dll
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\bin\Debug\Xceed.Document.NET.dll
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\bin\Debug\Xceed.Words.NET.dll
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\bin\Debug\DocumentFormat.OpenXml.xml
+C:\Users\milto\source\repos\Impressora Braille\Impressora Braille\obj\Debug\Impressora Braille.csproj.CopyComplete

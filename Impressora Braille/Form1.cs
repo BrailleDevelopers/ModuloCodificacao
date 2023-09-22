@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
+using System.IO;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Impressora_Braille
 {
@@ -18,6 +21,46 @@ namespace Impressora_Braille
         {
             InitializeComponent();
             timerCOM.Enabled = true;
+        }
+
+        private void importDoc()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            // Set the filter to allow text and DOCX files
+            openFileDialog.Filter = "Text Files (*.txt)|*.txt|Word Documents (*.docx)|*.docx|All Files (*.*)|*.*";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // Get the selected file's path
+                string filePath = openFileDialog.FileName;
+
+                // Check the file extension to determine how to handle it
+                string fileExtension = Path.GetExtension(filePath);
+
+                if (fileExtension.Equals(".txt", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Read the contents of the text file
+                    string fileContents = File.ReadAllText(filePath);
+
+                    // Display the contents in a TextBox or wherever you need it
+                    // For example, you can set the contents in a TextBox named textBox1
+                    textBox1.Text = fileContents;
+                }
+                else if (fileExtension.Equals(".docx", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Read the contents of the DOCX file using the DocumentFormat.OpenXml library
+                    using (WordprocessingDocument doc = WordprocessingDocument.Open(filePath, false))
+                    {
+                        var body = doc.MainDocumentPart.Document.Body;
+                        var docxContents = body.InnerText;
+
+                        // Display the contents in a TextBox or wherever you need it
+                        // For example, you can set the contents in a TextBox named textBox1
+                        textBox1.Text = docxContents;
+                    }
+                }
+            }
         }
 
         private void atualizaListaCOMs()
@@ -73,6 +116,7 @@ namespace Impressora_Braille
 
         private void button2_Click(object sender, EventArgs e)
         {
+
             try
             {
                 String frase = textBox1.Text;
@@ -273,7 +317,7 @@ namespace Impressora_Braille
                 {':', new string[] {"0", "3", "0" }},
                 //{':', new string[] {"0", "3", "0" }},
                 {'.', new string[] {"0", "0", "2" }},
-                {'’', new string[] {"0", "0", "2" }},
+                {'’', new string[] {"0", "2", "0" }},
                 {'?', new string[] {"0", "2", "1" }},
                 {'!', new string[] {"0", "3", "2" }},
                 {'-', new string[] {"0", "0", "3" }},
@@ -394,7 +438,7 @@ namespace Impressora_Braille
                 {
                     comboBox1.Enabled = false;
                     button3.Text = "Desconectar";
-                    button3.BackColor = Color.FromArgb(190, 87, 87);
+                    button3.BackColor = System.Drawing.Color.FromArgb(190, 87, 87);
 
                 }
             }
@@ -406,7 +450,7 @@ namespace Impressora_Braille
                     serialPort1.Close();
                     comboBox1.Enabled = true;
                     button3.Text = "Conectar";
-                    button3.BackColor = Color.FromArgb(99, 165, 115);
+                    button3.BackColor = System.Drawing.Color.FromArgb(99, 165, 115);
                 }
                 catch
                 {
@@ -449,6 +493,20 @@ namespace Impressora_Braille
         private void label3_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("São aceitos somente arquivos com extensão '.txt' e '.docx'.", "Atenção", MessageBoxButtons.OK);
+
+            try
+            {
+                importDoc();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocorreu um erro ao importar o arquivo: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
