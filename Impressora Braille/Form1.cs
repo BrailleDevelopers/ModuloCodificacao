@@ -119,11 +119,12 @@ namespace Impressora_Braille
 
             try
             {
-                String frase = textBox1.Text;
+                String frase = textBox1.Text.Trim();
                 String fraseFinal = "";
                 int tamanhoFrase = 0;
                 bool lastWasNumber = false;
-                bool lastWasUpperCase = false;
+                bool thereIsOneMore = false;
+                int caracteresAMais = 0;
 
                 if (!string.IsNullOrEmpty(frase))
                 {
@@ -132,15 +133,8 @@ namespace Impressora_Braille
                     {
                         if ((char.IsLetter(character) && character == char.ToUpper(character)))
                         {
-                            if (lastWasUpperCase)
-                            {
-                                tamanhoFrase += 1;
-                            }
-                            else
-                            {
-                                tamanhoFrase += 2;
-                            }
-                            lastWasUpperCase = true;
+                            tamanhoFrase += 2;
+                            caracteresAMais += 1;
                             lastWasNumber = false;
                         }
                         else if(char.IsDigit(character))
@@ -152,15 +146,14 @@ namespace Impressora_Braille
                             else
                             {
                                 tamanhoFrase += 2;
+                                caracteresAMais += 1;
                             }
                             lastWasNumber = true;
-                            lastWasUpperCase = false;
                         }
                         else // The character is not a letter, it's not in uppercase, or it's not a number.
                         {
                             tamanhoFrase += 1;
                             lastWasNumber = false;
-                            lastWasUpperCase = false;
                         }
 
                         if (tamanhoFrase >= 20)
@@ -169,31 +162,44 @@ namespace Impressora_Braille
                         }
                     }
 
-
-                    if (frase.Length > tamanhoFrase)
+                    if(tamanhoFrase == 21)
                     {
-                        while (frase.Length > tamanhoFrase)
+                        tamanhoFrase = 20;
+                        thereIsOneMore = true;
+                    }
+
+                    if (frase.Length + caracteresAMais > tamanhoFrase)
+                    {
+                        while (frase.Length + caracteresAMais > tamanhoFrase)
                         {
-                            String primeiraParteFrase = frase.Substring(0, tamanhoFrase);
-                            frase = frase.Substring(tamanhoFrase);
+                            String primeiraParteFrase = frase.Substring(0, tamanhoFrase - caracteresAMais);
+
+                            //criar código que verifica real tamanhoFrase a ser utilizado
+
+                            frase = frase.Substring(tamanhoFrase - caracteresAMais);
+
                             fraseFinal += gerarFraseCompleta(primeiraParteFrase, false);
                             lastWasNumber = false;
-                            lastWasUpperCase = false;
+
+                            caracteresAMais = 0;
+                            if (thereIsOneMore)
+                            {
+                                tamanhoFrase = 1;
+                            }
+                            else
+                            {
+                                tamanhoFrase = 0;
+                            }
+
+                            //tamanhoFrase = 0;
 
                             foreach (char character in frase)
                             {
                                 if ((char.IsLetter(character) && character == char.ToUpper(character)))
                                 {
-                                    if (lastWasUpperCase)
-                                    {
-                                        tamanhoFrase += 1;
-                                    }
-                                    else
-                                    {
-                                        tamanhoFrase += 2;
-                                    }
-                                    lastWasUpperCase = true;
+                                    tamanhoFrase += 2;
                                     lastWasNumber = false;
+                                    caracteresAMais += 1;
                                 }
                                 else if (char.IsDigit(character))
                                 {
@@ -204,15 +210,14 @@ namespace Impressora_Braille
                                     else
                                     {
                                         tamanhoFrase += 2;
+                                        caracteresAMais += 1;
                                     }
                                     lastWasNumber = true;
-                                    lastWasUpperCase = false;
                                 }
                                 else 
                                 {
                                     tamanhoFrase += 1;
                                     lastWasNumber = false;
-                                    lastWasUpperCase = false;
                                 }
 
                                 if (tamanhoFrase >= 20)
@@ -221,7 +226,7 @@ namespace Impressora_Braille
                                 }
                             }
                         }
-                        if (frase.Length <= tamanhoFrase)
+                        if (frase.Length + caracteresAMais <= tamanhoFrase)
                         {
                             fraseFinal += gerarFraseCompleta(frase, true);
                         }
@@ -230,6 +235,8 @@ namespace Impressora_Braille
                     {
                         fraseFinal = gerarFraseCompleta(frase, true);
                     }
+
+                    fraseFinal = "5" + fraseFinal;
 
                     if (serialPort1.IsOpen == true) 
                     {
